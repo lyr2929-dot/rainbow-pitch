@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>彩虹琴键 · 产品与合作介绍</title>
+<style>
+  :root { --c-do:#ff453a; --c-re:#ff9500; --c-mi:#ffd60a; --c-fa:#34c759; --c-sol:#32ade6; --c-la:#0a84ff; --c-si:#bf5af2; --ink:#1f2328; --muted:#8a9099; --line:#e6e8eb; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; color: var(--ink); background: #fff; line-height: 1.7; padding: 2.5rem 2rem; }
+  .doc { max-width: 800px; margin: 0 auto; }
+  .rainbow-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 1.6rem; }
+  .rainbow-bar span { flex: 1; }
+  h1 { font-size: 1.7rem; margin-bottom: 0.2rem; letter-spacing: 0.02em; }
+  .slogan { color: var(--muted); font-size: 0.98rem; margin-bottom: 1.8rem; }
+  h2 { font-size: 1.05rem; margin: 1.8rem 0 0.7rem; display: flex; align-items: center; gap: 8px; }
+  h2::before { content: ""; width: 5px; height: 18px; border-radius: 3px; background: var(--c-la); display: inline-block; }
+  p, li, td { font-size: 0.9rem; }
+  ul { padding-left: 1.3rem; margin: 0.4rem 0; }
+  li { margin-bottom: 0.45rem; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0.8rem 0; }
+  @media (max-width: 620px) { .grid2 { grid-template-columns: 1fr; } }
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 0.9rem 1.1rem; }
+  .card b { display: block; margin-bottom: 4px; font-size: 0.92rem; }
+  .card p { font-size: 0.84rem; color: #4a5058; }
+  .keys { display: flex; gap: 5px; margin: 1rem 0 0.4rem; }
+  .key { flex: 1; height: 52px; border-radius: 8px; display: flex; align-items: flex-end; justify-content: center; color: #fff; font-weight: 700; font-size: 0.85rem; padding-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 0.7rem 0; }
+  th, td { border: 1px solid var(--line); padding: 8px 11px; text-align: left; }
+  th { background: #f6f8fa; font-weight: 600; font-size: 0.82rem; }
+  .note { background: #f6f8fa; border-radius: 10px; padding: 0.85rem 1.1rem; font-size: 0.84rem; color: #4a5058; margin: 1rem 0; }
+  .note b { color: var(--ink); }
+  .cta { border: 2px solid var(--ink); border-radius: 12px; padding: 1rem 1.2rem; margin-top: 1.6rem; }
+  .cta b { font-size: 0.95rem; }
+  .cta p { font-size: 0.86rem; color: #4a5058; margin-top: 4px; }
+  .placeholder { color: #b06f00; background: #fff6e0; padding: 0 6px; border-radius: 4px; }
+  .foot { color: var(--muted); font-size: 0.78rem; margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 0.9rem; }
+  @media print { body { padding: 1rem; } * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="rainbow-bar">
+    <span style="background:var(--c-do)"></span><span style="background:var(--c-re)"></span>
+    <span style="background:var(--c-mi)"></span><span style="background:var(--c-fa)"></span>
+    <span style="background:var(--c-sol)"></span><span style="background:var(--c-la)"></span>
+    <span style="background:var(--c-si)"></span>
+  </div>
+
+  <h1>🌈 彩虹琴键</h1>
+  <p class="slogan">一台 MIDI 键盘 + 一个免费网页,把音乐启蒙搬回家 —— 为 midiplus TINY 而生的家庭音感启蒙工具</p>
+
+  <div class="keys">
+    <div class="key" style="background:var(--c-do)">do</div>
+    <div class="key" style="background:var(--c-re)">re</div>
+    <div class="key" style="background:var(--c-mi)">mi</div>
+    <div class="key" style="background:var(--c-fa)">fa</div>
+    <div class="key" style="background:var(--c-sol)">sol</div>
+    <div class="key" style="background:var(--c-la)">la</div>
+    <div class="key" style="background:var(--c-si)">si</div>
+  </div>
+
+  <h2>产品是什么</h2>
+  <p>一个<b>完全免费</b>的网页工具:家长在琴键上贴七色彩虹标签,孩子拍键即发声、跟着语音引导弹儿歌,家长端后台自动记录训练数据。浏览器直接打开,<b>零安装、零付费、零账号</b>。由具备钢琴背景的开发者基于音乐认知研究设计,已上线并持续迭代。</p>
+
+  <h2>核心功能</h2>
+  <div class="grid2">
+    <div class="card"><b>🌈 彩虹七色音高绑定</b><p>红=do、橙=re……颜色永久锁定音高,跨八度同色,零基础家长照表贴标即可开玩。</p></div>
+    <div class="card"><b>🎵 跟弹儿歌 + 语音引导</b><p>内置公有领域儿歌曲库,语音报音→孩子找色弹奏→自动进阶,支持整曲试听和家庭自编曲导入。</p></div>
+    <div class="card"><b>🎙 家长自录唱名</b><p>独家功能:家长录下自己唱的 do re mi,孩子听着爸妈的声音学音高,情感联结无可替代。</p></div>
+    <div class="card"><b>📊 家长数据后台</b><p>三种玩法模式、五种乐器音色、每日拍击/活跃/进阶统计,科学的循序渐进提示系统。</p></div>
+  </div>
+
+  <h2>为什么与 midiplus 合作</h2>
+  <ul>
+    <li><b>为 TINY 创造一个全新使用场景</b>:家庭音乐启蒙人群 —— 一个此前不在编曲键盘目标用户内、但体量可观的增量市场。</li>
+    <li><b>工具免费,硬件是唯一门槛</b>:用户使用本工具的唯一前置条件是一台 MIDI 键盘,官方推荐机型唯一标注 <b>midiplus TINY</b>(F 起始 32 键布局与工具深度适配,价位对家庭用户友好)。</li>
+    <li><b>内容渠道建设中</b>:开发者正在抖音搭建家庭音乐启蒙内容账号,以「免费工具 + TINY」为主线向家长人群输出,工具、内容、硬件三位一体。</li>
+    <li><b>软件生态零成本</b>:midiplus 无需任何开发投入,即获得一个绑定自家硬件、持续迭代的免费软件生态。</li>
+  </ul>
+
+  <h2>期望的合作方式</h2>
+  <table>
+    <tr><th>阶段</th><th>合作内容</th></tr>
+    <tr><td><b>现在</b></td><td>确认达人带货/佣金合作机制;提供 1 台 TINY 用于适配认证与内容拍摄</td></tr>
+    <tr><td><b>内容起量后</b></td><td>专属优惠码 / 定向佣金等深度玩法;可探讨联合内容</td></tr>
+    <tr><td><b>长期</b></td><td>工具持续免费迭代,TINY 长期作为官方推荐标配机型</td></tr>
+  </table>
+
+  <div class="note">
+    <b>合规定位说明:</b>本产品定位为「家长操作的家庭音乐启蒙工具」,键盘由家长管理和使用,所有宣传内容不将 TINY 表述为儿童玩具,不作教育效果承诺,严格遵守广告与未成年人保护相关规定。
+  </div>
+
+  <div class="cta">
+    <b>立即体验(浏览器打开,建议 Chrome + 任意 MIDI 键盘)</b>
+    <p>产品地址:<span class="placeholder">【部署后填入 GitHub Pages 链接】</span><br>
+    联系方式:<span class="placeholder">【填入你的微信/手机号】</span> · 开发者:<span class="placeholder">【你的称呼】</span></p>
+  </div>
+
+  <p class="foot">彩虹琴键 · 家庭音感启蒙工具 · 本页信息供商务合作洽谈使用 · 内置曲库均为公有领域旋律,产品版权归开发者所有</p>
+
+</div>
+</body>
+</html>
