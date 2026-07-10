@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>彩虹琴键 · 操作说明与导入歌曲方法</title>
+<style>
+  :root { --c-do:#ff453a; --c-re:#ff9500; --c-mi:#ffd60a; --c-fa:#34c759; --c-sol:#32ade6; --c-la:#0a84ff; --c-si:#bf5af2; --ink:#1f2328; --muted:#8a9099; --line:#e6e8eb; --accent:#0a84ff; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; color: var(--ink); background: #fff; line-height: 1.7; padding: 2.5rem 2rem; }
+  .doc { max-width: 840px; margin: 0 auto; }
+  header { border-bottom: 3px solid var(--ink); padding-bottom: 1.1rem; margin-bottom: 1.5rem; }
+  h1 { font-size: 1.55rem; margin-bottom: 0.3rem; }
+  .tagline { color: var(--muted); font-size: 0.9rem; }
+  .toc { background: #f6f8fa; border-radius: 12px; padding: 1rem 1.4rem; margin-bottom: 2rem; font-size: 0.88rem; }
+  .toc b { display:block; margin-bottom: 6px; color:#444; font-size:0.8rem; letter-spacing:0.05em; }
+  .toc ol { padding-left: 1.3rem; margin: 0; }
+  .toc li { margin-bottom: 2px; }
+  h2 { font-size: 1.18rem; margin: 2.2rem 0 0.9rem; padding-bottom: 6px; border-bottom: 2px solid var(--line); }
+  h3 { font-size: 1rem; margin: 1.3rem 0 0.4rem; color: #2b3138; }
+  p, li { font-size: 0.92rem; }
+  ul, ol { padding-left: 1.4rem; margin: 0.5rem 0; }
+  li { margin-bottom: 0.4rem; }
+  .step { background: #f6f8fa; border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 0.85rem 1.2rem; margin: 0.7rem 0; }
+  .step .n { display:inline-block; background: var(--accent); color:#fff; width:22px; height:22px; border-radius:50%; text-align:center; line-height:22px; font-size:0.78rem; font-weight:700; margin-right:8px; }
+  .warn { background: #fff5f5; border: 1px solid #f5c2c2; border-radius: 10px; padding: 0.9rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; }
+  .warn b { color: #c0392b; }
+  .tip { background: #f0f9f4; border: 1px solid #b5e0c6; border-radius: 10px; padding: 0.9rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; }
+  .tip b { color: #1a7a45; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 0.8rem 0; }
+  th, td { border: 1px solid var(--line); padding: 8px 11px; text-align: left; vertical-align: top; }
+  th { background: #f6f8fa; font-weight: 600; font-size: 0.82rem; }
+  code { background: #eef1f4; padding: 1px 6px; border-radius: 4px; font-size: 0.85em; }
+  pre { background: #1d2026; color: #e6e4de; border-radius: 10px; padding: 1rem 1.2rem; overflow-x: auto; font-size: 0.82rem; line-height: 1.6; margin: 0.8rem 0; }
+  pre code { background: none; padding: 0; color: inherit; }
+  .qa { margin: 0.9rem 0; }
+  .qa .q { font-weight: 600; }
+  .qa .a { color: #4a5058; font-size: 0.89rem; margin-top: 2px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 0.6rem 0; }
+  .chip { display: flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 20px; padding: 5px 12px; font-size: 0.82rem; }
+  .swatch { width: 15px; height: 15px; border-radius: 50%; flex-shrink: 0; }
+  .foot { color: var(--muted); font-size: 0.82rem; margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+  @media print { body{padding:1rem;} h2{break-after:avoid;} .step,.warn,.tip,table,.qa,pre{break-inside:avoid;} *{-webkit-print-color-adjust:exact;print-color-adjust:exact;} }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <header>
+    <h1>🌈 彩虹琴键 · 操作说明</h1>
+    <p class="tagline">家长后台工具 · 含跟弹儿歌与导入歌曲方法 · 面向零基础家长</p>
+  </header>
+
+  <div class="toc">
+    <b>目录</b>
+    <ol>
+      <li>准备与启动</li>
+      <li>七个颜色 = 七个音</li>
+      <li>三种玩法(训练 / 自由 / 跟弹)</li>
+      <li>跟弹儿歌详细操作</li>
+      <li>导入自己的歌曲</li>
+      <li>数据与备份</li>
+      <li>常见问题</li>
+    </ol>
+  </div>
+
+  <h2>1 · 准备与启动</h2>
+  <div class="step"><span class="n">1</span>把 MIDI 键盘用 USB 线连到电脑(即插即用,不用装驱动)。</div>
+  <div class="step"><span class="n">2</span>用 <b>Chrome 浏览器</b>打开后台网页(苹果 Safari 不支持键盘连接)。</div>
+  <div class="step"><span class="n">3</span>点右上角 <b>"启动引擎"</b>,浏览器弹窗问是否允许 MIDI 时点 <b>"允许"</b>。</div>
+  <div class="step"><span class="n">4</span>状态栏显示 <b>"已连接 …"</b> 和 <b>"音频:已激活"</b> 即就绪。拍一下贴了色标的键,应出声。</div>
+  <div class="warn"><b>必须用 Chrome 或 Edge。</b>连接 MIDI 键盘的功能(Web MIDI)目前只有这两个浏览器稳定支持,Safari 用不了。</div>
+
+  <h2>2 · 七个颜色 = 七个音</h2>
+  <p>颜色按彩虹顺序对应 C 大调七个音,<b>颜色只对应音高、与高低八度无关</b>——所有的 do 都是红色。</p>
+  <div class="chips">
+    <div class="chip"><span class="swatch" style="background:var(--c-do)"></span>do C 红</div>
+    <div class="chip"><span class="swatch" style="background:var(--c-re)"></span>re D 橙</div>
+    <div class="chip"><span class="swatch" style="background:var(--c-mi)"></span>mi E 黄</div>
+    <div class="chip"><span class="swatch" style="background:var(--c-fa)"></span>fa F 绿</div>
+    <div class="chip"><span class="swatch" style="background:var(--c-sol)"></span>sol G 青</div>
+    <div class="chip"><span class="swatch" style="background:var(--c-la)"></span>la A 蓝</div>
+    <div class="chip"><span class="swatch" style="background:var(--c-si)"></span>si B 紫</div>
+  </div>
+  <p>贴纸怎么贴,见配套的"贴标对照表"网页。</p>
+
+  <h2>3 · 三种玩法</h2>
+  <table>
+    <tr><th>模式</th><th>发声规则</th><th>适合</th></tr>
+    <tr><td><b>🎯 训练模式</b></td><td>只有"训练音"里启用的音会响,其余键静默</td><td>低龄孩子,聚焦少量音高</td></tr>
+    <tr><td><b>🎹 自由模式</b></td><td>所有琴键都响(黑键也响,但不计入统计)</td><td>当普通钢琴随便玩</td></tr>
+    <tr><td><b>🎵 跟弹儿歌</b></td><td>跟弹进行中所有键都响,系统逐音引导</td><td>已能主动找键的孩子</td></tr>
+  </table>
+  <p>训练/自由在右侧"发声模式"切换。跟弹从左上角"跟弹儿歌"面板启动,启动后自动接管发声,结束后回到原来的模式。</p>
+  <h3>训练音怎么加</h3>
+  <p>点"训练音"里的颜色卡可手动开关。数据达标时顶部会弹提示,建议加入下一个音(顺序 do→sol→mi→re→la→fa→si),你可采纳或暂缓。加音顺序、天数次数门槛都能在"进阶判断参数"里调。</p>
+
+  <h2>4 · 跟弹儿歌详细操作</h2>
+  <div class="step"><span class="n">1</span>在"跟弹儿歌"面板的下拉框选一首曲子(带 ⭐ 的是你自己导入的)。</div>
+  <div class="step"><span class="n">2</span>点 <b>"开始跟弹"</b>。屏幕出现一个大色块,显示当前要弹的音(唱名 + 简谱数字 + 颜色),同时语音报出这个音。</div>
+  <div class="step"><span class="n">3</span>孩子在琴上找到那个颜色的键弹下去。<b>弹对了</b>——进度条前进,自动报下一个音;<b>弹错了</b>——色块抖一下、琴照样响、不前进,连错两次会自动把当前音再报一遍。</div>
+  <div class="step"><span class="n">4</span>整首弹完,语音会夸一句,"今日弹完曲数"+1,并提示可换一首或再来一遍。</div>
+  <table>
+    <tr><th>按钮</th><th>作用</th></tr>
+    <tr><td><b>▶ 试听</b></td><td>用钢琴音色自动播放整首示范曲,先听一遍再跟弹;再点一次停止。需先启动引擎</td></tr>
+    <tr><td><b>🔊 语音提示:开 / 关</b></td><td>开关语音报音。关掉后只看颜色不听声,适合安静环境或想让孩子靠颜色自己找</td></tr>
+    <tr><td><b>🔁 再听一次</b></td><td>把当前这个音重新报一遍</td></tr>
+    <tr><td><b>结束</b></td><td>中途退出跟弹,回到普通模式</td></tr>
+  </table>
+  <div class="tip"><b>判定不分高低八度。</b>只要音名对就算对——琴上有几个 do,弹哪个都通过。所以孩子不用记具体位置,认颜色就行。</div>
+  <h3>用自己的声音报音(唱名录音)</h3>
+  <p>右侧"唱名录音"面板可以把七个唱名录成你自己的声音,跟弹时优先播放你的录音(自带准确音高),比系统朗读效果好得多。</p>
+  <ol>
+    <li>点某个音的<b>【录】</b>,浏览器询问麦克风权限时点"允许";</li>
+    <li>点下后<b>立刻</b>对准琴的音高唱这个音(0.5~1秒),2秒自动停,开头静音会自动剪掉;</li>
+    <li>点<b>【听】</b>试听,不满意点【删】重录。建议先在琴上弹一下这个音找准再录。</li>
+  </ol>
+  <p>报音优先级:你的录音 &gt; 网页目录下的 voice/1~7.mp3 音频文件 &gt; 系统朗读。注意:录音功能需要在 https 网址下使用(本地双击打开的网页不行);录音存在本机浏览器,<b>不随 JSON 备份走</b>,换电脑需重录。</p>
+  <div class="warn"><b>语音音色因电脑而异。</b>系统朗读用的是电脑自带的朗读功能,Windows、Mac 读出来的声音不一样,是正常现象,不是故障。若完全没声音,见第 7 节。用自己的录音可完全绕开这个问题。</div>
+
+  <h2>5 · 导入自己的歌曲</h2>
+  <p>内置的十几首都是不受版权限制的公共旋律。想加别的曲子,用"导入歌曲 JSON"功能,自己写一个曲谱文件导进去。</p>
+
+  <h3>第一步:把曲子翻成简谱数字</h3>
+  <p>用 <code>1 2 3 4 5 6 7</code> 分别代表 <b>do re mi fa sol la si</b>,一个音一个数字,<b>用空格隔开</b>。目前只支持这七个基本音,<b>不区分高低八度、不带节奏</b>(时值长短系统不判断,只按顺序一个个走)。</p>
+  <p>例:小星星开头"一闪一闪亮晶晶"= <code>1 1 5 5 6 6 5</code></p>
+
+  <h3>第二步:做一个 JSON 文件</h3>
+  <p>用电脑记事本(Windows)或文本编辑(Mac)新建一个文本文件,按下面格式写,存成 <code>.json</code> 结尾。可以一次放多首:</p>
+  <pre><code>[
+  { "name": "小星星", "seq": "1 1 5 5 6 6 5 4 4 3 3 2 2 1" },
+  { "name": "我家的歌", "seq": "3 3 3 5 1 2 3" }
+]</code></pre>
+  <ul>
+    <li><code>name</code> 是曲名(显示在下拉框,超过30字会截断)。</li>
+    <li><code>seq</code> 是简谱数字序列,空格分隔,只认 1–7。</li>
+    <li>方括号 <code>[ ]</code> 、大括号 <code>{ }</code>、逗号、引号都要用<b>英文半角</b>符号,中文标点会导致读取失败。</li>
+  </ul>
+
+  <h3>第三步:导入</h3>
+  <div class="step"><span class="n">1</span>点"跟弹儿歌"面板里的 <b>"导入歌曲 JSON"</b>。</div>
+  <div class="step"><span class="n">2</span>选中你做好的 <code>.json</code> 文件。</div>
+  <div class="step"><span class="n">3</span>提示"成功导入 N 首"后,下拉框里就能选到(带 ⭐ 标记)。</div>
+  <div class="tip"><b>导入的歌会跟着数据一起备份。</b>导出 JSON 备份时会一并保存,换电脑导入备份后自编曲目也在。</div>
+  <div class="warn"><b>版权提醒:</b>你自己导入什么曲子、是否有权使用,责任由你承担。内置曲目已规避版权风险,但大量现代创作儿歌仍在著作权保护期内,商用传播前请自行核实。</div>
+
+  <h3>常见格式错误</h3>
+  <table>
+    <tr><th>现象</th><th>原因</th></tr>
+    <tr><td>提示"读取失败"</td><td>多半是用了中文标点(,""【】),或少了逗号/括号。用英文符号重写</td></tr>
+    <tr><td>导入成功但那首点开是空的</td><td><code>seq</code> 里没有 1–7 的有效数字,检查是不是写成了别的字符</td></tr>
+    <tr><td>某个音跳过了</td><td>该音写了 0 或 8 以上,超范围会被忽略</td></tr>
+  </table>
+
+  <h2>6 · 数据与备份</h2>
+  <div class="warn"><b>数据只存在当前这台电脑的浏览器里</b>,不上传云端、不跨设备同步。换电脑、换浏览器、清缓存都会丢。所以:固定用同一台电脑同一个浏览器,并<b>每周点一次"导出 JSON 备份"</b>存好。</div>
+  <p>换电脑时,在新电脑打开后台点"导入 JSON 恢复"选择备份文件即可接续,训练数据和自编曲目都会回来。</p>
+
+  <h2>7 · 常见问题</h2>
+  <div class="qa"><div class="q">Q:拍键没声音?</div><div class="a">依次查:①点了"启动引擎"并允许 MIDI 了吗;②状态是否"已连接";③音箱开了吗、电脑音量够吗;④训练模式下拍的是不是启用音(没启用的键本来不响);⑤是不是用了 Chrome。</div></div>
+  <div class="qa"><div class="q">Q:跟弹时语音不出声?</div><div class="a">先确认"语音提示"是开的。若还是没有,是电脑系统朗读功能的问题——Windows 检查是否装了中文语音包;实在不行可关掉语音,只用颜色引导照样能玩。</div></div>
+  <div class="qa"><div class="q">Q:跟弹判定太严/太松?</div><div class="a">判定规则是"音名对即通过、不分八度",不可调。若孩子总弹错,建议先回训练模式把单个音练熟,或选前几首练习曲(音更少)。</div></div>
+  <div class="qa"><div class="q">Q:状态一直"未连接"?</div><div class="a">重新插拔 USB;换个 USB 口;刷新网页再点一次"启动引擎";确认用 Chrome。</div></div>
+  <div class="qa"><div class="q">Q:导入的歌怎么删?</div><div class="a">当前版本没有单独删除按钮。若要清理,只能"清空全部数据"后重新导入需要的(会连训练数据一起清空,清空前务必先导出备份)。</div></div>
+
+  <p class="foot">
+    <b>配套文件:</b>① 家长后台 rainbow-pitch-dashboard(Chrome 打开)② 贴标对照表 rainbow-key-labels(打印后照贴)③ 本说明。<br>
+    上线/分发前请逐首弹一遍内置曲目校对谱面;语音音色差异建议在产品页提前告知用户,避免被当成 bug。
+  </p>
+
+</div>
+</body>
+</html>

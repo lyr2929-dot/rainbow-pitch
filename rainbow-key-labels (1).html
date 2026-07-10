@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>彩虹琴键 · 贴标对照表</title>
+<style>
+  :root { --c-do:#ff453a; --c-re:#ff9500; --c-mi:#ffd60a; --c-fa:#34c759; --c-sol:#32ade6; --c-la:#0a84ff; --c-si:#bf5af2; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; color:#222; background:#fff; padding:2rem; line-height:1.5; }
+  .sheet { max-width: 940px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; margin-bottom: 0.3rem; }
+  .sub { color:#777; font-size:0.85rem; margin-bottom:1.5rem; }
+  .legend { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:1.5rem; }
+  .legend-item { display:flex; align-items:center; gap:8px; border:1px solid #e5e5e5; border-radius:10px; padding:8px 12px; }
+  .swatch { width:26px; height:26px; border-radius:6px; flex-shrink:0; border:1px solid rgba(0,0,0,0.1); }
+  .legend-item .nm { font-weight:700; font-size:0.95rem; }
+  .legend-item .info { font-size:0.75rem; color:#888; }
+  .kb-wrap { border:1px solid #e5e5e5; border-radius:12px; padding:1.25rem; margin-bottom:1.5rem; overflow-x:auto; }
+  .kb-title { font-size:0.75rem; color:#999; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.75rem; }
+  .keyboard { position:relative; display:flex; height:160px; min-width:760px; }
+  .wkey { flex:1; border:1px solid #ccc; border-top:none; border-radius:0 0 5px 5px; background:#fff; position:relative; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; padding-bottom:6px; }
+  .wkey .cap { width:80%; aspect-ratio:1; border-radius:6px; margin-bottom:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:0.75rem; box-shadow:0 1px 3px rgba(0,0,0,0.2); }
+  .wkey .cap small { font-size:0.55rem; font-weight:400; opacity:0.9; }
+  .bkey { position:absolute; top:0; width:3.4%; height:98px; background:#2a2a2a; border-radius:0 0 4px 4px; z-index:2; }
+  table { width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:1.5rem; }
+  th, td { border:1px solid #e5e5e5; padding:8px 10px; text-align:center; }
+  th { background:#f7f7f7; font-weight:600; color:#555; font-size:0.78rem; }
+  .cell-color { width:20px; height:20px; border-radius:5px; display:inline-block; vertical-align:middle; border:1px solid rgba(0,0,0,0.1); }
+  .grp { background:#fafafa; font-weight:600; color:#888; }
+  .note { background:#f7f9fb; border-left:3px solid var(--c-la); border-radius:6px; padding:1rem 1.25rem; font-size:0.82rem; color:#555; margin-bottom:1rem; }
+  .note b { color:#333; }
+  .pattern { font-family:monospace; font-size:0.95rem; letter-spacing:2px; margin:8px 0; }
+  @media print { body{padding:0.5rem;} * { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <h1>🌈 彩虹琴键 · 贴标对照表</h1>
+  <p class="sub">C大调七音 · do re mi fa sol la si · 彩虹七色 · 适用32键F起始迷你键盘(如 midiplus TINY、NI M32) · 全部白键贴标,共19个</p>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="kb-wrap">
+    <div class="kb-title">键盘位置图 — 从左到右 32 键(F → C),所有白键都贴对应颜色,黑键不贴</div>
+    <div class="keyboard" id="keyboard"></div>
+  </div>
+
+  <table id="labelTable">
+    <thead><tr><th>键序(左→右)</th><th>音名</th><th>唱名</th><th>颜色</th><th>色块</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <div class="note">
+    <b>贴标规律:</b>键盘最左端是 F(绿),之后按彩虹顺序循环——
+    <div class="pattern">绿(F) 青(G) 蓝(A) 紫(B) 红(C) 橙(D) 黄(E) → 再循环</div>
+    记住一句话:<b>红色永远是 do(C)</b>,其余按彩虹顺序 红橙黄绿青蓝紫 = do re mi fa sol la si。所有白键都贴,黑键全部跳过。
+  </div>
+  <div class="note">
+    <b>要点:</b>颜色只对应音高、与八度无关——所有 C 都是红,不管高低。绑定一旦贴上<b>不要再改</b>,稳定是孩子建立联结的前提。<br><br>
+    <b>循序渐进建议:</b>低龄孩子初期只贴 <b style="color:var(--c-do)">红(do C)</b> 和 <b style="color:var(--c-sol)">青(sol G)</b> 两色,其余留白,配合后台的训练模式使用;后台提示加新音时再补贴对应颜色。大孩子或自由模式可一次贴全。<br><br>
+    <b>买贴纸注意:</b>选1.5cm左右防水圆点贴,青色和蓝色务必选对比明显的两款(有的贴纸套装青蓝难分,可用"深蓝浅蓝"替代,只要全家叫法统一即可)。
+  </div>
+</div>
+
+<script>
+const NOTES_MAP = {
+  0:{cn:'do',en:'C',color:'#ff453a',name:'红'},
+  2:{cn:'re',en:'D',color:'#ff9500',name:'橙'},
+  4:{cn:'mi',en:'E',color:'#ffd60a',name:'黄'},
+  5:{cn:'fa',en:'F',color:'#34c759',name:'绿'},
+  7:{cn:'sol',en:'G',color:'#32ade6',name:'青'},
+  9:{cn:'la',en:'A',color:'#0a84ff',name:'蓝'},
+  11:{cn:'si',en:'B',color:'#bf5af2',name:'紫'},
+};
+const WHITE_PC = [0,2,4,5,7,9,11];   // C D E F G A B
+const START_PC = 5;                   // F 起始
+const HAS_BLACK_AFTER = [0,2,5,7,9];  // C D F G A 之后有黑键
+
+// 图例(按彩虹顺序 do→si)
+const legend = document.getElementById('legend');
+[0,2,4,5,7,9,11].forEach(pc => {
+  const n = NOTES_MAP[pc];
+  legend.innerHTML += `<div class="legend-item"><div class="swatch" style="background:${n.color}"></div>
+    <div><div class="nm">${n.cn} · ${n.en}</div><div class="info">${n.name}色</div></div></div>`;
+});
+
+// 生成 32 键
+let keys = [];
+for (let s = 0; s < 32; s++) {
+  const pc = (s + START_PC) % 12;
+  keys.push({ s, pc, white: WHITE_PC.includes(pc), grp: Math.floor(s/12)+1 });
+}
+const whites = keys.filter(k => k.white);
+
+// 键盘图
+const kb = document.getElementById('keyboard');
+whites.forEach((w, idx) => {
+  const el = document.createElement('div');
+  el.className = 'wkey';
+  const note = NOTES_MAP[w.pc];
+  el.innerHTML = `<div class="cap" style="background:${note.color}">${note.cn}<small>${note.en}·${w.grp}区</small></div>`;
+  kb.appendChild(el);
+  if (HAS_BLACK_AFTER.includes(w.pc) && w.s < 31 && idx < whites.length - 1) {
+    const bk = document.createElement('div');
+    bk.className = 'bkey';
+    bk.style.left = `calc(${idx+1} * (100% / ${whites.length}) - 1.7%)`;
+    kb.appendChild(bk);
+  }
+});
+
+// 表格
+const tbody = document.getElementById('tbody');
+let lastGrp = 0;
+whites.forEach(w => {
+  const note = NOTES_MAP[w.pc];
+  if (w.grp !== lastGrp) {
+    lastGrp = w.grp;
+    const gr = document.createElement('tr');
+    gr.innerHTML = `<td class="grp" colspan="5">第 ${w.grp} 区(F→${w.grp<3?'E':'C'})</td>`;
+    tbody.appendChild(gr);
+  }
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>第 ${w.s+1} 键</td><td><b>${note.en}</b></td><td>${note.cn}</td><td>${note.name}</td>
+    <td><span class="cell-color" style="background:${note.color}"></span></td>`;
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>

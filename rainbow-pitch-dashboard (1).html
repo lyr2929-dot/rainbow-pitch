@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>彩虹琴键 · 家长后台</title>
+<style>
+  :root {
+    --bg: #14161a; --panel: #1d2026; --panel2: #23272e; --border: #2e333b;
+    --text: #e6e4de; --muted: #8b8f96; --good: #6ec5a0; --warn: #f0c060;
+    --c-do:#ff453a; --c-re:#ff9500; --c-mi:#ffd60a; --c-fa:#34c759;
+    --c-sol:#32ade6; --c-la:#0a84ff; --c-si:#bf5af2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; padding: 1.5rem; }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 1.15rem; font-weight: 600; }
+  .top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 1.25rem; }
+  .status { display: flex; gap: 14px; align-items: center; font-size: 0.8rem; color: var(--muted); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #555; display: inline-block; margin-right: 5px; }
+  .dot.on { background: var(--good); }
+  .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.25rem; margin-bottom: 12px; }
+  .panel h2 { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.9rem; font-weight: 600; }
+  .notes-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .note-chip { border-radius: 12px; padding: 9px 11px; min-width: 76px; border: 2px solid var(--border); background: var(--panel2); cursor: pointer; transition: 0.15s; position: relative; }
+  .note-chip.enabled { border-color: currentColor; }
+  .note-chip .cn { font-size: 1rem; font-weight: 700; }
+  .note-chip .en { font-size: 0.7rem; color: var(--muted); }
+  .note-chip .cnt { font-size: 0.7rem; margin-top: 4px; color: var(--muted); }
+  .note-chip.flash { transform: scale(1.08); box-shadow: 0 0 0 3px currentColor; }
+  .suggestion { border: 1px solid var(--warn); background: #2a2417; border-radius: 12px; padding: 0.9rem 1.1rem; margin-bottom: 12px; display: none; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .suggestion.show { display: flex; }
+  .suggestion .txt { font-size: 0.88rem; color: var(--warn); }
+  .btn { border: 1px solid var(--border); background: var(--panel2); color: var(--text); border-radius: 9px; padding: 7px 14px; font-size: 0.82rem; cursor: pointer; font-family: inherit; }
+  .btn:hover { border-color: var(--muted); }
+  .btn.primary { background: var(--good); border-color: var(--good); color: #10241c; font-weight: 600; }
+  .btn.small { padding: 5px 10px; font-size: 0.76rem; }
+  .stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .stat { flex: 1; min-width: 100px; background: var(--panel2); border-radius: 10px; padding: 10px 12px; }
+  .stat .num { font-size: 1.35rem; font-weight: 700; }
+  .stat .lbl { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 0.8rem; }
+  .bar-label { min-width: 64px; }
+  .bar-track { flex: 1; height: 10px; background: var(--panel2); border-radius: 6px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 6px; transition: width 0.3s; }
+  .bar-num { min-width: 40px; text-align: right; color: var(--muted); font-size: 0.75rem; }
+  .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.84rem; flex-wrap: wrap; }
+  .row label { min-width: 150px; color: var(--muted); }
+  .row input[type=number] { width: 80px; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 5px 9px; font-family: inherit; }
+  .row select { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 5px 9px; font-family: inherit; max-width: 100%; }
+  .feed { max-height: 180px; overflow-y: auto; font-size: 0.76rem; color: var(--muted); line-height: 1.9; }
+  .feed b { font-weight: 600; }
+  .mode-toggle { display: flex; gap: 6px; }
+  .mode-btn { flex: 1; text-align: center; padding: 8px; border-radius: 9px; border: 1px solid var(--border); background: var(--panel2); cursor: pointer; font-size: 0.8rem; color: var(--muted); }
+  .mode-btn.on { border-color: var(--good); color: var(--good); font-weight: 600; }
+  .footer { font-size: 0.72rem; color: var(--muted); line-height: 1.8; margin-top: 6px; }
+  .test-keys { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .test-key { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel2); cursor: pointer; font-size: 0.78rem; }
+  /* 跟弹模式 */
+  .follow-stage { display: none; margin-top: 10px; }
+  .follow-stage.show { display: block; }
+  .target-box { display: flex; align-items: center; gap: 16px; background: var(--panel2); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .target-block { width: 84px; height: 84px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.5rem; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.35); transition: 0.15s; }
+  .target-block small { font-size: 0.7rem; font-weight: 500; opacity: 0.92; }
+  .target-block.shake { animation: shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .target-info { flex: 1; }
+  .target-info .song { font-size: 0.92rem; font-weight: 600; }
+  .target-info .prog { font-size: 0.78rem; color: var(--muted); margin: 4px 0 8px; }
+  .prog-track { height: 8px; background: var(--bg); border-radius: 5px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 5px; background: var(--good); transition: width 0.25s; }
+  .done-banner { display: none; background: #17301f; border: 1px solid var(--good); color: var(--good); border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; margin-top: 8px; }
+  .done-banner.show { display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <h1>🌈 彩虹琴键 · 家长后台</h1>
+    <div class="status">
+      <span><span class="dot" id="midiDot"></span>键盘:<span id="midiStatus">未连接</span></span>
+      <span><span class="dot" id="audioDot"></span>音频:<span id="audioStatus">待激活</span></span>
+      <button class="btn" id="initBtn">启动引擎</button>
+    </div>
+  </div>
+
+  <div class="suggestion" id="suggestBox">
+    <span class="txt" id="suggestTxt"></span>
+    <span>
+      <button class="btn primary" id="acceptBtn">采纳</button>
+      <button class="btn" id="dismissBtn">暂不</button>
+    </span>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="panel">
+        <h2>跟弹儿歌 🎵</h2>
+        <div class="row" style="margin-bottom:6px">
+          <select id="songSelect" style="flex:1"></select>
+          <button class="btn" id="previewBtn">▶ 试听</button>
+          <button class="btn primary" id="songStartBtn">开始跟弹</button>
+          <button class="btn" id="songStopBtn" style="display:none">结束</button>
+        </div>
+        <div class="row" style="margin-bottom:0">
+          <button class="btn small" id="voiceBtn">🔊 语音提示:开</button>
+          <button class="btn small" id="replayBtn" style="display:none">🔁 再听一次</button>
+          <button class="btn small" id="importSongBtn">导入歌曲 JSON</button>
+          <input type="file" id="songFile" accept="application/json,.json" style="display:none">
+        </div>
+        <div class="follow-stage" id="followStage">
+          <div class="target-box">
+            <div class="target-block" id="targetBlock">–</div>
+            <div class="target-info">
+              <div class="song" id="followSongName"></div>
+              <div class="prog" id="followProg"></div>
+              <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="done-banner" id="doneBanner">🎉 弹完啦!换一首继续,或点"开始跟弹"再来一遍。</div>
+        <p class="footer">玩法:语音报一个音 → 孩子在琴上找到对应颜色弹出来 → 弹对自动报下一个,直到整首弹完。判定不分高低八度,弹错不扣分、琴照样响。内置曲目均为公有领域旋律;自编曲目可用"导入歌曲 JSON"添加,格式:[{"name":"曲名","seq":"1 1 5 5 6 6 5"}](简谱数字1-7,空格分隔)。</p>
+      </div>
+
+      <div class="panel">
+        <h2>训练音 · 点击手动启用/停用</h2>
+        <div class="notes-row" id="notesRow"></div>
+        <p class="footer">训练模式下,只有启用音的琴键会发声。颜色与音高一一对应,请与琴键贴纸保持一致。</p>
+      </div>
+
+      <div class="panel">
+        <h2>今日数据</h2>
+        <div class="stat-row">
+          <div class="stat"><div class="num" id="todayTotal">0</div><div class="lbl">今日总拍击</div></div>
+          <div class="stat"><div class="num" id="todayMinutes">0</div><div class="lbl">今日活跃分钟</div></div>
+          <div class="stat"><div class="num" id="streakDays">0</div><div class="lbl">连续活跃天数</div></div>
+          <div class="stat"><div class="num" id="todaySongs">0</div><div class="lbl">今日弹完曲数</div></div>
+        </div>
+        <div id="todayBars"></div>
+      </div>
+
+      <div class="panel">
+        <h2>累计进度</h2>
+        <div id="totalBars"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>发声模式</h2>
+        <div class="mode-toggle">
+          <div class="mode-btn on" id="modeTrain">🎯 训练模式</div>
+          <div class="mode-btn" id="modeFree">🎹 自由模式</div>
+        </div>
+        <p class="footer">训练模式:只有启用音发声,帮孩子聚焦少量音高。自由模式:所有琴键都发声,当普通琴随便玩(黑键也响,但不计入统计)。跟弹儿歌进行中,所有琴键自动发声。</p>
+      </div>
+
+      <div class="panel">
+        <h2>陪伴记录</h2>
+        <div class="mode-toggle">
+          <div class="mode-btn on" id="modeCompanion">👨‍👧 家长陪伴中</div>
+          <div class="mode-btn" id="modeBackground">🔈 孩子自己玩</div>
+        </div>
+        <p class="footer">真人陪伴时段的学习效率远高于独自接触,分开记录方便你对比。</p>
+      </div>
+
+      <div class="panel">
+        <h2>声音设置 · 各模式独立音色</h2>
+        <div class="row"><label>🎯 训练模式</label><select id="timTrain"></select></div>
+        <div class="row"><label>🎹 自由模式</label><select id="timFree"></select></div>
+        <div class="row"><label>🎵 跟弹模式</label><select id="timFollow"></select></div>
+        <div class="row"><label>当前音色</label><span id="currentTimbre" style="color:var(--good)">钢琴</span></div>
+        <p class="footer">跟弹模式整首固定一种音色,示范音与琴声一致。轮换选项帮孩子把音高从音色中剥离,固定选项适合聚焦。</p>
+      </div>
+
+      <div class="panel">
+        <h2>唱名录音 · 用自己的声音报音</h2>
+        <div class="notes-row" id="voiceRow"></div>
+        <p class="footer">点【录】后立刻对准琴音唱(0.5~1秒),2秒自动停。录好后跟弹报音优先用你的声音;其次用网页目录下的 voice/1~7.mp3;都没有才用系统朗读。开头静音会自动剪掉。录音需要 https 环境(GitHub Pages 可以,本地双击打开不行),且不随 JSON 备份走,换电脑需重录。</p>
+      </div>
+
+      <div class="panel">
+        <h2>进阶判断参数 · 可调</h2>
+        <div class="row"><label>最少活跃天数</label><input type="number" id="pMinDays" value="7" min="1"></div>
+        <div class="row"><label>最少累计拍击</label><input type="number" id="pMinPresses" value="200" min="10"></div>
+        <div class="row"><label>探索广度要求</label>
+          <select id="pBreadth">
+            <option value="1">近3天拍过全部启用音</option>
+            <option value="0">不要求</option>
+          </select>
+        </div>
+        <p class="footer">连续天数权重高于总量。达标后将提示引入下一个音,顺序:do C → sol G → mi E → re D → la A → fa F → si B。</p>
+      </div>
+
+      <div class="panel">
+        <h2>实时动态</h2>
+        <div class="feed" id="feed">等待启动…</div>
+        <div class="test-keys" id="testKeys"></div>
+        <p class="footer">上方按钮为无键盘测试用,正式使用请连接MIDI键盘。</p>
+      </div>
+
+      <div class="panel">
+        <h2>数据 · 备份与恢复</h2>
+        <button class="btn" id="exportBtn">导出 JSON 备份</button>
+        <button class="btn" id="importBtn" style="margin-left:6px">导入 JSON 恢复</button>
+        <button class="btn" id="resetBtn" style="margin-left:6px">清空全部数据</button>
+        <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+        <p class="footer" style="margin-top:8px">数据存在本机浏览器,不跨设备同步(含导入的自编歌曲)。换电脑前先导出备份,在新电脑上导入即可接续。建议每周导出一次。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== 音高定义:C大调七音,彩虹七色,颜色锁定音级(pitch class),跨八度同色 =====
+const NOTES = [
+  { pc: 0,  cn: 'do',  en: 'C', hex: '#ff453a', cname:'红', order: 0 },
+  { pc: 7,  cn: 'sol', en: 'G', hex: '#32ade6', cname:'青', order: 1 },
+  { pc: 4,  cn: 'mi',  en: 'E', hex: '#ffd60a', cname:'黄', order: 2 },
+  { pc: 2,  cn: 're',  en: 'D', hex: '#ff9500', cname:'橙', order: 3 },
+  { pc: 9,  cn: 'la',  en: 'A', hex: '#0a84ff', cname:'蓝', order: 4 },
+  { pc: 5,  cn: 'fa',  en: 'F', hex: '#34c759', cname:'绿', order: 5 },
+  { pc: 11, cn: 'si',  en: 'B', hex: '#bf5af2', cname:'紫', order: 6 },
+];
+const DIA_PCS = NOTES.map(n => n.pc);
+const DEG_PC = { 1:0, 2:2, 3:4, 4:5, 5:7, 6:9, 7:11 };           // 简谱数字 -> pitch class
+const DEG_MID = { 1:60, 2:62, 3:64, 4:65, 5:67, 6:69, 7:71 };    // 简谱数字 -> 示范用MIDI音
+const SPOKEN = { 1:'哆', 2:'瑞', 3:'咪', 4:'发', 5:'唆', 6:'拉', 7:'西' }; // TTS用汉字唱名
+
+// ===== 内置曲库(仅公有领域旋律;简谱数字序列,忽略节奏与八度) =====
+const BUILTIN_SONGS = [
+  { name:'练习 · 彩虹音阶',        seq:'1 2 3 4 5 6 7 1 7 6 5 4 3 2 1' },
+  { name:'练习 · do和sol跳一跳',   seq:'1 5 1 5 1 5 5 1 5 1' },
+  { name:'练习 · 快乐三和弦',      seq:'1 3 5 3 1 1 3 5 5 3 1' },
+  { name:'小星星',                 seq:'1 1 5 5 6 6 5 4 4 3 3 2 2 1 5 5 4 4 3 3 2 5 5 4 4 3 3 2 1 1 5 5 6 6 5 4 4 3 3 2 2 1' },
+  { name:'两只老虎',               seq:'1 2 3 1 1 2 3 1 3 4 5 3 4 5 5 6 5 4 3 1 5 6 5 4 3 1 1 5 1 1 5 1' },
+  { name:'玛丽有只小羊羔',         seq:'3 2 1 2 3 3 3 2 2 2 3 5 5 3 2 1 2 3 3 3 3 2 2 3 2 1' },
+  { name:'伦敦桥',                 seq:'5 6 5 4 3 4 5 2 3 4 3 4 5 5 6 5 4 3 4 5 2 5 3 1' },
+  { name:'划船歌',                 seq:'1 1 1 2 3 3 2 3 4 5 1 1 1 5 5 5 3 3 3 1 1 1 5 4 3 2 1' },
+  { name:'欢乐颂',                 seq:'3 3 4 5 5 4 3 2 1 1 2 3 3 2 2 3 3 4 5 5 4 3 2 1 1 2 3 2 1 1' },
+  { name:'小蜜蜂',                 seq:'5 3 3 4 2 2 1 2 3 4 5 5 5 5 3 3 3 4 2 2 2 1 3 5 5 1' },
+  { name:'铃儿响叮当(副歌)',       seq:'3 3 3 3 3 3 3 5 1 2 3 4 4 4 4 4 3 3 3 3 2 2 3 2 5 3 3 3 3 3 3 3 5 1 2 3 4 4 4 4 4 3 3 5 5 4 2 1' },
+  { name:'生日快乐',               seq:'5 5 6 5 1 7 5 5 6 5 2 1 5 5 5 3 1 7 6 4 4 3 1 2 1' },
+  { name:'王老先生有块地',         seq:'1 1 1 5 6 6 5 3 3 2 2 1 5 1 1 1 5 6 6 5 3 3 2 2 1' },
+  { name:'噢!苏珊娜',              seq:'1 2 3 5 5 6 5 3 1 2 3 3 2 1 2 1 2 3 5 5 6 5 3 1 2 3 3 2 2 1' },
+  { name:'布谷鸟',                 seq:'5 3 5 3 2 3 4 3 2 5 3 5 3 2 3 2 1' },
+];
+
+// ===== 持久化状态 =====
+const DEFAULT_STATE = {
+  enabled: [0, 7],
+  introduced: { 0: null, 7: null },
+  daily: {},
+  activeMinutes: {},
+  songsDone: {},                    // 'YYYY-MM-DD' -> n
+  customSongs: [],                  // [{name, seq}]
+  voiceOn: true,
+  dismissedUntil: null,
+  freeMode: false,
+  timbre: { train: 'rotate10', free: 'rotate10', follow: '0' },
+  params: { minDays: 7, minPresses: 200, breadth: 1 },
+};
+let S = loadState();
+function loadState() {
+  try { const raw = localStorage.getItem('rainbowPitch'); if (raw) return Object.assign(structuredClone(DEFAULT_STATE), JSON.parse(raw)); } catch(e){}
+  const s = structuredClone(DEFAULT_STATE);
+  const t = today(); s.introduced[0] = t; s.introduced[7] = t;
+  return s;
+}
+function save() { localStorage.setItem('rainbowPitch', JSON.stringify(S)); }
+function today() { return new Date().toISOString().slice(0,10); }
+function allSongs() { return BUILTIN_SONGS.concat(S.customSongs || []); }
+function parseSeq(seq) { return String(seq).split(/[\s,]+/).map(x=>parseInt(x)).filter(d=>d>=1&&d<=7); }
+
+// ===== 音频引擎 =====
+let ac = null, pressCount = 0;
+const TIMBRES = [
+  { name: '钢琴',   type: 'additive', harmonics: [[1,1],[2,0.35],[3,0.15],[4,0.06]], decay: 1.5 },
+  { name: '电钢琴', type: 'epwarm' },
+  { name: '定音鼓', type: 'drum' },
+  { name: '小提琴', type: 'violin' },
+  { name: '吉他',   type: 'pluck' },
+];
+let rotIdx = 0, lastTimbreName = '钢琴';
+let sessionIdx = 0;
+try {
+  sessionIdx = (parseInt(localStorage.getItem('rainbowSessionIdx') || '0')) % TIMBRES.length;
+  localStorage.setItem('rainbowSessionIdx', String(sessionIdx + 1));
+} catch(e) {}
+function activeMode() { return follow.active ? 'follow' : (S.freeMode ? 'free' : 'train'); }
+function timbreFor(mode) {
+  const sel = (S.timbre && S.timbre[mode]) || '0';
+  if (sel === 'rotate10') return TIMBRES[rotIdx % TIMBRES.length];
+  if (sel === 'session') return TIMBRES[sessionIdx];
+  const i = parseInt(sel);
+  return TIMBRES[isNaN(i) ? 0 : i % TIMBRES.length];
+}
+function rotateTimbreIfNeeded() {
+  const mode = activeMode();
+  if (mode === 'follow') return;  // 跟弹模式整首保持同一音色
+  if (S.timbre[mode] === 'rotate10' && pressCount > 0 && pressCount % 10 === 0) rotIdx++;
+}
+function playNote(midiNote, velocity, timbreOverride) {
+  if (!ac) return;
+  const t = timbreOverride || timbreFor(activeMode());
+  lastTimbreName = t.name;
+  document.getElementById('currentTimbre').textContent = t.name;
+  const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
+  const now = ac.currentTime;
+  const vol = 0.15 + 0.15 * (velocity / 127);
+  const master = ac.createGain();
+  master.connect(ac.destination);
+
+  if (t.type === 'additive') {                 // 钢琴:连续谐波加法合成
+    t.harmonics.forEach(([m, a]) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sine'; o.frequency.value = freq * m; g.gain.value = a;
+      o.connect(g); g.connect(master); o.start(now); o.stop(now + t.decay);
+    });
+    master.gain.setValueAtTime(0, now);
+    master.gain.linearRampToValueAtTime(vol, now + 0.008);
+    master.gain.exponentialRampToValueAtTime(0.001, now + t.decay);
+
+  } else if (t.type === 'epwarm') {            // 电钢琴:雅马哈DX7风格FM合成,玻璃tine起振+温暖本体+混响
+    const wet = ac.createGain(); wet.gain.value = 0.38;
+    master.connect(wet); wet.connect(reverb());
+    const car = ac.createOscillator(); car.type = 'sine'; car.frequency.value = freq;
+    // 调制器1 · 1:1 温暖谐波,深度随时间衰减(音色由亮变暗)
+    const m1 = ac.createOscillator(); m1.type = 'sine'; m1.frequency.value = freq;
+    const m1g = ac.createGain();
+    m1g.gain.setValueAtTime(freq * 1.5, now);
+    m1g.gain.exponentialRampToValueAtTime(freq * 0.2, now + 0.8);
+    m1.connect(m1g); m1g.connect(car.frequency);
+    // 调制器2 · 14:1 玻璃感tine起振,极快消失
+    const m2 = ac.createOscillator(); m2.type = 'sine'; m2.frequency.value = freq * 14;
+    const m2g = ac.createGain();
+    m2g.gain.setValueAtTime(freq * 5, now);
+    m2g.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+    m2.connect(m2g); m2g.connect(car.frequency);
+    car.connect(master);
+    [car, m1, m2].forEach(o => { o.start(now); o.stop(now + 1.9); });
+    master.gain.setValueAtTime(0, now);
+    master.gain.linearRampToValueAtTime(vol, now + 0.005);
+    master.gain.exponentialRampToValueAtTime(0.001, now + 1.9);
+
+  } else if (t.type === 'drum') {              // 定音鼓:有音高的鼓,起振音高微降+鼓面噪声
+    const o = ac.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(freq * 1.15, now);
+    o.frequency.exponentialRampToValueAtTime(freq, now + 0.09);
+    o.connect(master); o.start(now); o.stop(now + 1.0);
+    const nb = ac.createBuffer(1, Math.floor(ac.sampleRate * 0.04), ac.sampleRate);
+    const nd = nb.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = (Math.random()*2-1) * (1 - i/nd.length);
+    const ns = ac.createBufferSource(); ns.buffer = nb;
+    const nf = ac.createBiquadFilter(); nf.type = 'lowpass'; nf.frequency.value = 900;
+    const ng = ac.createGain(); ng.gain.value = 0.5;
+    ns.connect(nf); nf.connect(ng); ng.connect(master); ns.start(now);
+    master.gain.setValueAtTime(0, now);
+    master.gain.linearRampToValueAtTime(vol * 1.1, now + 0.005);
+    master.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+
+  } else if (t.type === 'violin') {            // 小提琴:锯齿波+低通+揉弦
+    const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = freq;
+    const f = ac.createBiquadFilter(); f.type = 'lowpass';
+    f.frequency.value = Math.min(5000, freq * 5); f.Q.value = 1;
+    const vib = ac.createOscillator(), vg = ac.createGain();
+    vib.frequency.value = 5.5; vg.gain.value = freq * 0.007;
+    vib.connect(vg); vg.connect(o.frequency);
+    o.connect(f); f.connect(master);
+    o.start(now); o.stop(now + 1.25); vib.start(now); vib.stop(now + 1.25);
+    master.gain.setValueAtTime(0, now);
+    master.gain.linearRampToValueAtTime(vol * 0.8, now + 0.09);
+    master.gain.setValueAtTime(vol * 0.8, now + 0.8);
+    master.gain.exponentialRampToValueAtTime(0.001, now + 1.25);
+
+  } else if (t.type === 'pluck') {             // 古筝:Karplus-Strong物理拨弦模型
+    const src = ac.createBufferSource();
+    src.buffer = ksBuffer(midiNote);
+    src.connect(master); src.start(now);
+    master.gain.setValueAtTime(vol * 1.3, now);
+    master.gain.setValueAtTime(vol * 1.3, now + 1.4);
+    master.gain.exponentialRampToValueAtTime(0.001, now + 1.9);
+  }
+}
+// 共享卷积混响:合成1.4秒指数衰减脉冲响应,全局仅建一次
+let reverbNode_ = null;
+function reverb() {
+  if (reverbNode_) return reverbNode_;
+  const sr = ac.sampleRate, len = Math.floor(sr * 1.4);
+  const ir = ac.createBuffer(2, len, sr);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = ir.getChannelData(ch);
+    for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.6);
+  }
+  reverbNode_ = ac.createConvolver();
+  reverbNode_.buffer = ir;
+  reverbNode_.connect(ac.destination);
+  return reverbNode_;
+}
+// Karplus-Strong:用噪声激励+延迟反馈模拟真实弦振动,按音符缓存
+const ksCache = {};
+function ksBuffer(midiNote) {
+  if (ksCache[midiNote]) return ksCache[midiNote];
+  const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
+  const sr = ac.sampleRate, N = Math.max(2, Math.round(sr / freq));
+  const len = Math.floor(sr * 2.0);
+  const buf = ac.createBuffer(1, len, sr), d = buf.getChannelData(0);
+  const ring = new Float32Array(N);
+  let prev = 0;
+  for (let i = 0; i < N; i++) { const w = Math.random()*2-1; ring[i] = 0.5*(w+prev); prev = w; }
+  const damp = 0.9955 + 0.0035 * Math.min(1, 220 / freq);  // 低音余韵长、高音短,贴近真实弦
+  let idx = 0;
+  for (let i = 0; i < len; i++) {
+    const cur = ring[idx], nxt = ring[(idx+1) % N];
+    d[i] = cur;
+    ring[idx] = damp * 0.5 * (cur + nxt);
+    idx = (idx+1) % N;
+  }
+  ksCache[midiNote] = buf;
+  return buf;
+}
+
+// ===== 语音(浏览器TTS) =====
+function speak(txt, pitchRatio) {
+  if (!S.voiceOn) return;
+  if (!('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = 'zh-CN'; u.rate = 0.85;
+    u.pitch = Math.min(2, Math.max(0.5, pitchRatio || 1));
+    speechSynthesis.speak(u);
+  } catch(e) {}
+}
+// 真人唱名录音:网页同目录下若存在 voice/1.mp3 ~ voice/7.mp3(do~si),自动优先于TTS使用
+const VOICE_AUDIO = {};
+[1,2,3,4,5,6,7].forEach(d => {
+  const a = new Audio('voice/' + d + '.mp3');
+  a.preload = 'auto';
+  a.addEventListener('canplaythrough', () => { VOICE_AUDIO[d] = a; }, { once: true });
+  a.addEventListener('error', () => { delete VOICE_AUDIO[d]; }, { once: true });
+});
+// ===== 用户自录唱名(存浏览器本地,独立于训练数据) =====
+const VKEY = 'rainbowVoiceRec';
+let userVoice = {};
+try { userVoice = JSON.parse(localStorage.getItem(VKEY) || '{}'); } catch(e) {}
+const uvCache = {};
+function userVoiceAudio(deg) {
+  if (!userVoice[deg]) return null;
+  if (!uvCache[deg]) uvCache[deg] = new Audio(userVoice[deg]);
+  return uvCache[deg];
+}
+let recDeg = null, mediaRec = null, mediaStream = null, recChunks = [], recTimer = null;
+async function startRec(deg) {
+  if (recDeg !== null) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert('当前环境不支持录音,请在 https 网址下使用(本地双击打开的网页无法录音)。'); return; }
+  try { mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch(e) { alert('无法访问麦克风,请在浏览器弹窗中点"允许"。'); return; }
+  recDeg = deg; recChunks = [];
+  mediaRec = new MediaRecorder(mediaStream);
+  mediaRec.ondataavailable = e => recChunks.push(e.data);
+  mediaRec.onstop = processRec;
+  mediaRec.start();
+  recTimer = setTimeout(stopRec, 2000);
+  renderVoiceRow();
+}
+function stopRec() {
+  clearTimeout(recTimer);
+  if (mediaRec && mediaRec.state === 'recording') mediaRec.stop();
+  if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+}
+async function processRec() {
+  const deg = recDeg;
+  try {
+    const blob = new Blob(recChunks);
+    const arr = await blob.arrayBuffer();
+    const actx = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const decoded = await actx.decodeAudioData(arr);
+    const data = decoded.getChannelData(0);
+    // 找起始点:首个超过阈值的采样,往前留50ms,自动剪掉开头静音
+    let onset = 0;
+    for (let i = 0; i < data.length; i++) { if (Math.abs(data[i]) > 0.02) { onset = Math.max(0, i - Math.floor(decoded.sampleRate * 0.05)); break; } }
+    const maxLen = Math.floor(decoded.sampleRate * 1.2);
+    const seg = data.subarray(onset, Math.min(data.length, onset + maxLen));
+    if (seg.length < decoded.sampleRate * 0.1) { alert('没录到声音,请点【录】后立刻开口唱。'); recDeg = null; renderVoiceRow(); return; }
+    const wav = encodeWav(seg, decoded.sampleRate);
+    const url = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(new Blob([wav], { type: 'audio/wav' })); });
+    userVoice[deg] = url; delete uvCache[deg];
+    try { localStorage.setItem(VKEY, JSON.stringify(userVoice)); }
+    catch(e) { alert('存储空间不足,录音未能保存。'); delete userVoice[deg]; }
+  } catch(e) { alert('录音处理失败,请重试。'); }
+  recDeg = null;
+  renderVoiceRow();
+}
+function encodeWav(samples, rate) {
+  const len = samples.length;
+  const buf = new ArrayBuffer(44 + len * 2); const v = new DataView(buf);
+  const ws = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  ws(0,'RIFF'); v.setUint32(4, 36 + len*2, true); ws(8,'WAVE'); ws(12,'fmt ');
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,rate,true); v.setUint32(28,rate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
+  ws(36,'data'); v.setUint32(40, len*2, true);
+  for (let i = 0; i < len; i++) { const s = Math.max(-1, Math.min(1, samples[i])); v.setInt16(44 + i*2, s < 0 ? s*0x8000 : s*0x7FFF, true); }
+  return buf;
+}
+function renderVoiceRow() {
+  const row = document.getElementById('voiceRow');
+  row.innerHTML = '';
+  [1,2,3,4,5,6,7].forEach(deg => {
+    const note = NOTES.find(n => n.pc === DEG_PC[deg]);
+    const has = !!userVoice[deg];
+    const recording = recDeg === deg;
+    const el = document.createElement('div');
+    el.className = 'note-chip' + (has ? ' enabled' : '');
+    el.style.color = note.hex;
+    el.innerHTML = '<div class="cn" style="color:' + (has || recording ? note.hex : 'var(--muted)') + '">' + note.cn + '</div>' +
+      '<div class="en">' + (recording ? '🎙 录音中…' : (has ? '已录' : '未录')) + '</div>' +
+      '<div class="cnt" style="display:flex;gap:6px;margin-top:6px">' +
+        (recording ? '<span class="test-key" data-act="stop">停</span>'
+                   : '<span class="test-key" data-act="rec">录</span>' +
+                     (has ? '<span class="test-key" data-act="play">听</span><span class="test-key" data-act="del">删</span>' : '')) +
+      '</div>';
+    el.querySelectorAll('[data-act]').forEach(b => {
+      b.onclick = (ev) => {
+        ev.stopPropagation();
+        const act = b.dataset.act;
+        if (act === 'rec') startRec(deg);
+        else if (act === 'stop') stopRec();
+        else if (act === 'play') { const a = userVoiceAudio(deg); if (a) { a.currentTime = 0; a.play(); } }
+        else if (act === 'del') { delete userVoice[deg]; delete uvCache[deg]; localStorage.setItem(VKEY, JSON.stringify(userVoice)); renderVoiceRow(); }
+      };
+    });
+    row.appendChild(el);
+  });
+}
+
+// 报目标音:优先级 自录唱名 > voice目录文件 > TTS变调+示范音
+const DEG_ST = { 1:0, 2:2, 3:4, 4:5, 5:7, 6:9, 7:11 };  // 简谱数字 -> 距do的半音数
+function announceTarget(deg) {
+  if (!S.voiceOn) return;
+  const rec = userVoiceAudio(deg) || VOICE_AUDIO[deg];
+  if (rec) {
+    try { rec.currentTime = 0; rec.play(); } catch(e) {}
+    return;
+  }
+  speak(SPOKEN[deg], Math.pow(2, DEG_ST[deg] / 12));
+  setTimeout(() => { if (follow.active && follow.seq[follow.pos] === deg) playNote(DEG_MID[deg], 85); }, 650);
+}
+
+// ===== MIDI =====
+async function initMIDI() {
+  if (!navigator.requestMIDIAccess) { setMidi(false, '浏览器不支持,请用 Chrome'); return; }
+  try {
+    const access = await navigator.requestMIDIAccess();
+    const hook = () => {
+      let name = '';
+      access.inputs.forEach(inp => { inp.onmidimessage = onMIDI; if (!name) name = inp.name; });
+      setMidi(access.inputs.size > 0, access.inputs.size > 0 ? ('已连接 ' + name) : '未检测到设备');
+    };
+    access.onstatechange = hook; hook();
+  } catch(e) { setMidi(false, '连接失败'); }
+}
+function setMidi(on, txt) {
+  document.getElementById('midiDot').classList.toggle('on', on);
+  document.getElementById('midiStatus').textContent = txt;
+}
+function onMIDI(msg) {
+  const [cmd, note, vel] = msg.data;
+  if ((cmd & 0xf0) === 0x90 && vel > 0) handlePress(note, vel);
+}
+
+// ===== 跟弹模式 =====
+let follow = { active: false, songIdx: -1, pos: 0, wrong: 0, seq: [] };
+// ===== 示范曲试听(统一钢琴音色,不计统计) =====
+let previewTimer = null;
+function stopPreview() {
+  if (previewTimer) { clearInterval(previewTimer); previewTimer = null; }
+  document.getElementById('previewBtn').textContent = '▶ 试听';
+}
+function startPreview() {
+  if (follow.active) return;
+  if (previewTimer) { stopPreview(); return; }
+  if (!ac) { alert('请先点右上角"启动引擎"。'); return; }
+  const song = allSongs()[parseInt(document.getElementById('songSelect').value)];
+  if (!song) return;
+  const seq = parseSeq(song.seq);
+  if (!seq.length) { alert('这首曲目的谱面数据为空或格式不对。'); return; }
+  const piano = TIMBRES[0];
+  let i = 0;
+  document.getElementById('previewBtn').textContent = '⏹ 停止';
+  playNote(DEG_MID[seq[0]], 85, piano); i = 1;
+  previewTimer = setInterval(() => {
+    if (i >= seq.length) { stopPreview(); return; }
+    playNote(DEG_MID[seq[i]], 85, piano); i++;
+  }, 450);
+}
+
+function startFollow() {
+  stopPreview();
+  const sel = document.getElementById('songSelect');
+  const idx = parseInt(sel.value);
+  const song = allSongs()[idx];
+  if (!song) return;
+  const seq = parseSeq(song.seq);
+  if (!seq.length) { alert('这首曲目的谱面数据为空或格式不对。'); return; }
+  follow = { active: true, songIdx: idx, pos: 0, wrong: 0, seq };
+  document.getElementById('followStage').classList.add('show');
+  document.getElementById('doneBanner').classList.remove('show');
+  document.getElementById('songStartBtn').style.display = 'none';
+  document.getElementById('songStopBtn').style.display = '';
+  document.getElementById('replayBtn').style.display = '';
+  document.getElementById('followSongName').textContent = song.name;
+  promptCurrent(true);
+}
+function stopFollow() {
+  follow.active = false;
+  document.getElementById('followStage').classList.remove('show');
+  document.getElementById('songStartBtn').style.display = '';
+  document.getElementById('songStopBtn').style.display = 'none';
+  document.getElementById('replayBtn').style.display = 'none';
+  renderTestKeys();
+}
+function promptCurrent(withVoice) {
+  const deg = follow.seq[follow.pos];
+  const pc = DEG_PC[deg];
+  const note = NOTES.find(n => n.pc === pc);
+  const blk = document.getElementById('targetBlock');
+  blk.style.background = note.hex;
+  blk.innerHTML = note.cn + '<small>' + deg + ' · ' + note.cname + '色</small>';
+  document.getElementById('followProg').textContent = '第 ' + (follow.pos+1) + ' / ' + follow.seq.length + ' 个音';
+  document.getElementById('progFill').style.width = (follow.pos / follow.seq.length * 100) + '%';
+  if (withVoice) announceTarget(deg);
+}
+function followPress(pc) {
+  const deg = follow.seq[follow.pos];
+  if (pc === DEG_PC[deg]) {
+    follow.pos++; follow.wrong = 0;
+    if (follow.pos >= follow.seq.length) {
+      document.getElementById('progFill').style.width = '100%';
+      const d = today();
+      S.songsDone[d] = (S.songsDone[d] || 0) + 1;
+      save(); renderStats();
+      document.getElementById('doneBanner').classList.add('show');
+      speak('真棒,弹完啦');
+      logRaw('🎉 完整弹完《' + allSongs()[follow.songIdx].name + '》');
+      stopFollow();
+    } else {
+      setTimeout(() => promptCurrent(true), 500);
+    }
+  } else if (DIA_PCS.includes(pc)) {
+    follow.wrong++;
+    const blk = document.getElementById('targetBlock');
+    blk.classList.remove('shake'); void blk.offsetWidth; blk.classList.add('shake');
+    if (follow.wrong >= 2) { follow.wrong = 0; announceTarget(deg); }
+  }
+}
+
+// ===== 核心:按键处理 =====
+let lastActivityMin = null;
+let companionMode = true;
+function handlePress(midiNote, vel) {
+  const pc = midiNote % 12;
+  const isDia = DIA_PCS.includes(pc);
+  if (follow.active) {
+    playNote(midiNote, vel);            // 跟弹中:全键发声
+    followPress(pc);
+    if (!isDia) return;
+  } else if (S.freeMode) {
+    playNote(midiNote, vel);            // 自由模式:全键发声
+    if (!isDia) return;                 // 黑键不计入统计
+  } else {
+    if (!S.enabled.includes(pc)) return; // 训练模式:非启用音静默
+    playNote(midiNote, vel);
+  }
+  pressCount++;
+  rotateTimbreIfNeeded();
+
+  const d = today();
+  if (!S.daily[d]) S.daily[d] = {};
+  if (!S.daily[d][pc]) S.daily[d][pc] = { companion: 0, background: 0 };
+  S.daily[d][pc][companionMode ? 'companion' : 'background']++;
+
+  const nowMin = Math.floor(Date.now() / 60000);
+  if (nowMin !== lastActivityMin) {
+    S.activeMinutes[d] = (S.activeMinutes[d] || 0) + 1;
+    lastActivityMin = nowMin;
+  }
+  save();
+  flashChip(pc);
+  logFeed(pc, midiNote);
+  renderStats();
+  checkAdvance();
+}
+
+// ===== 进阶判断 =====
+function noteStats(pc) {
+  let total = 0, activeDays = 0;
+  const days = Object.keys(S.daily).sort();
+  for (const d of days) {
+    const rec = S.daily[d][pc];
+    if (rec) { const n = rec.companion + rec.background; total += n; if (n > 0) activeDays++; }
+  }
+  return { total, activeDays };
+}
+function checkAdvance() {
+  if (S.dismissedUntil && today() <= S.dismissedUntil) return;
+  const next = NOTES.filter(n => !S.enabled.includes(n.pc)).sort((a,b)=>a.order-b.order)[0];
+  if (!next) return;
+  const p = S.params;
+  const allOk = S.enabled.every(pc => {
+    const st = noteStats(pc);
+    return st.activeDays >= p.minDays && st.total >= p.minPresses;
+  });
+  let breadthOk = true;
+  if (p.breadth) {
+    const recent = Object.keys(S.daily).sort().slice(-3);
+    breadthOk = S.enabled.every(pc => recent.some(d => S.daily[d]?.[pc] && (S.daily[d][pc].companion + S.daily[d][pc].background) > 0));
+  }
+  const box = document.getElementById('suggestBox');
+  if (allOk && breadthOk) {
+    document.getElementById('suggestTxt').textContent = '当前训练音已充分接触,建议引入下一个音:' + next.cn + '(' + next.en + ' · ' + next.cname + '色)';
+    box.classList.add('show');
+    box.dataset.pc = next.pc;
+  } else box.classList.remove('show');
+}
+
+// ===== UI =====
+function renderSongSelect() {
+  const sel = document.getElementById('songSelect');
+  sel.innerHTML = '';
+  allSongs().forEach((s, i) => {
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = (i >= BUILTIN_SONGS.length ? '⭐ ' : '') + s.name;
+    sel.appendChild(o);
+  });
+}
+function renderVoiceBtn() {
+  document.getElementById('voiceBtn').textContent = S.voiceOn ? '🔊 语音提示:开' : '🔇 语音提示:关';
+}
+function renderNotes() {
+  const row = document.getElementById('notesRow');
+  row.innerHTML = '';
+  NOTES.slice().sort((a,b)=>a.pc-b.pc).forEach(n => {
+    const on = S.enabled.includes(n.pc);
+    const st = noteStats(n.pc);
+    const el = document.createElement('div');
+    el.className = 'note-chip' + (on ? ' enabled' : '');
+    el.style.color = n.hex;
+    el.id = 'chip-' + n.pc;
+    el.innerHTML = '<div class="cn" style="color:' + (on?n.hex:'var(--muted)') + '">' + n.cn + ' ' + n.en + '</div>' +
+      '<div class="en">' + n.cname + '色 · ' + (on ? '训练中' : '未启用') + '</div>' +
+      '<div class="cnt">' + st.total + ' 次 · ' + st.activeDays + ' 天</div>';
+    el.onclick = () => {
+      if (on) { S.enabled = S.enabled.filter(x => x !== n.pc); }
+      else { S.enabled.push(n.pc); if (!S.introduced[n.pc]) S.introduced[n.pc] = today(); }
+      save(); renderNotes(); renderStats(); checkAdvance();
+    };
+    row.appendChild(el);
+  });
+  renderTestKeys();
+}
+function flashChip(pc) {
+  const el = document.getElementById('chip-' + pc);
+  if (!el) return;
+  el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 180);
+}
+function renderStats() {
+  const d = today();
+  const dayData = S.daily[d] || {};
+  let todayTotal = 0;
+  Object.values(dayData).forEach(r => todayTotal += r.companion + r.background);
+  document.getElementById('todayTotal').textContent = todayTotal;
+  document.getElementById('todayMinutes').textContent = S.activeMinutes[d] || 0;
+  document.getElementById('todaySongs').textContent = S.songsDone[d] || 0;
+
+  let streak = 0; let cur = new Date();
+  for (;;) {
+    const key = cur.toISOString().slice(0,10);
+    const has = S.daily[key] && Object.values(S.daily[key]).some(r => r.companion + r.background > 0);
+    if (has) { streak++; cur.setDate(cur.getDate()-1); } else break;
+  }
+  document.getElementById('streakDays').textContent = streak;
+
+  const tb = document.getElementById('todayBars');
+  const totB = document.getElementById('totalBars');
+  tb.innerHTML = ''; totB.innerHTML = '';
+  const maxToday = Math.max(1, ...NOTES.map(n => { const r = dayData[n.pc]; return r ? r.companion + r.background : 0; }));
+  const p = S.params;
+  NOTES.slice().sort((a,b)=>a.pc-b.pc).filter(n => S.enabled.includes(n.pc)).forEach(n => {
+    const r = dayData[n.pc]; const cnt = r ? r.companion + r.background : 0;
+    tb.innerHTML += '<div class="bar-row"><span class="bar-label" style="color:' + n.hex + '">' + n.cn + ' ' + n.en + '</span>' +
+      '<div class="bar-track"><div class="bar-fill" style="width:' + (cnt/maxToday*100) + '%;background:' + n.hex + '"></div></div>' +
+      '<span class="bar-num">' + cnt + '</span></div>';
+    const st = noteStats(n.pc);
+    const prog = Math.min(100, Math.round((Math.min(st.activeDays/p.minDays,1)*0.6 + Math.min(st.total/p.minPresses,1)*0.4)*100));
+    totB.innerHTML += '<div class="bar-row"><span class="bar-label" style="color:' + n.hex + '">' + n.cn + ' ' + n.en + '</span>' +
+      '<div class="bar-track"><div class="bar-fill" style="width:' + prog + '%;background:' + n.hex + '"></div></div>' +
+      '<span class="bar-num">' + prog + '%</span></div>';
+  });
+}
+function logRaw(html) {
+  const f = document.getElementById('feed');
+  const t = new Date().toLocaleTimeString('zh-CN', {hour12:false});
+  f.innerHTML = '<div>' + t + ' · ' + html + '</div>' + f.innerHTML;
+  if (f.children.length > 60) f.removeChild(f.lastChild);
+}
+function logFeed(pc, midiNote) {
+  const note = NOTES.find(n => n.pc === pc);
+  const oct = Math.floor(midiNote / 12) - 1;
+  logRaw('<b style="color:' + note.hex + '">' + note.cn + note.en + oct + '</b> · ' + lastTimbreName + ' · ' + (companionMode?'陪伴':'自己玩'));
+}
+function renderTestKeys() {
+  const box = document.getElementById('testKeys');
+  box.innerHTML = '';
+  [48, 50, 52, 53, 55, 57, 59, 60, 62, 64].forEach(mn => {
+    const pc = mn % 12;
+    const note = NOTES.find(n => n.pc === pc);
+    if (!note) return;
+    const b = document.createElement('div');
+    b.className = 'test-key';
+    const active = follow.active || S.freeMode || S.enabled.includes(pc);
+    b.style.color = active ? note.hex : 'var(--muted)';
+    b.textContent = note.cn + Math.floor(mn/12 - 1);
+    b.onclick = () => handlePress(mn, 90);
+    box.appendChild(b);
+  });
+}
+
+// ===== 事件绑定 =====
+document.getElementById('initBtn').onclick = async () => {
+  if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); }
+  await ac.resume();
+  document.getElementById('audioDot').classList.add('on');
+  document.getElementById('audioStatus').textContent = '已激活';
+  initMIDI();
+  document.getElementById('feed').innerHTML = '引擎已启动,等待拍击…';
+};
+document.getElementById('songStartBtn').onclick = startFollow;
+document.getElementById('previewBtn').onclick = startPreview;
+document.getElementById('songSelect').onchange = stopPreview;
+document.getElementById('songStopBtn').onclick = stopFollow;
+document.getElementById('replayBtn').onclick = () => { if (follow.active) promptCurrent(true); };
+document.getElementById('voiceBtn').onclick = () => { S.voiceOn = !S.voiceOn; save(); renderVoiceBtn(); };
+document.getElementById('importSongBtn').onclick = () => document.getElementById('songFile').click();
+document.getElementById('songFile').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const arr = JSON.parse(ev.target.result);
+      if (!Array.isArray(arr)) { alert('格式不对:应为数组 [{"name":"曲名","seq":"1 1 5 5"}]'); return; }
+      let added = 0;
+      arr.forEach(s => {
+        if (s && typeof s.name === 'string' && s.seq && parseSeq(s.seq).length > 0) {
+          S.customSongs.push({ name: s.name.slice(0,30), seq: s.seq });
+          added++;
+        }
+      });
+      save(); renderSongSelect();
+      alert('成功导入 ' + added + ' 首。请确认导入曲目的版权由你自行负责。');
+    } catch(err) { alert('读取失败,文件可能不是有效的 JSON。'); }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+};
+document.getElementById('modeTrain').onclick = () => { S.freeMode = false; save(); toggleSoundMode(); renderTestKeys(); };
+document.getElementById('modeFree').onclick = () => { S.freeMode = true; save(); toggleSoundMode(); renderTestKeys(); };
+function toggleSoundMode() {
+  document.getElementById('modeTrain').classList.toggle('on', !S.freeMode);
+  document.getElementById('modeFree').classList.toggle('on', S.freeMode);
+}
+document.getElementById('modeCompanion').onclick = () => { companionMode = true; toggleMode(); };
+document.getElementById('modeBackground').onclick = () => { companionMode = false; toggleMode(); };
+function toggleMode() {
+  document.getElementById('modeCompanion').classList.toggle('on', companionMode);
+  document.getElementById('modeBackground').classList.toggle('on', !companionMode);
+}
+['pMinDays','pMinPresses','pBreadth'].forEach(id => {
+  document.getElementById(id).onchange = e => {
+    S.params.minDays = parseInt(document.getElementById('pMinDays').value) || 7;
+    S.params.minPresses = parseInt(document.getElementById('pMinPresses').value) || 200;
+    S.params.breadth = parseInt(document.getElementById('pBreadth').value);
+    save(); checkAdvance(); renderStats();
+  };
+});
+document.getElementById('acceptBtn').onclick = () => {
+  const pc = parseInt(document.getElementById('suggestBox').dataset.pc);
+  S.enabled.push(pc); S.introduced[pc] = today();
+  document.getElementById('suggestBox').classList.remove('show');
+  save(); renderNotes(); renderStats();
+};
+document.getElementById('dismissBtn').onclick = () => {
+  const dt = new Date(); dt.setDate(dt.getDate() + 3);
+  S.dismissedUntil = dt.toISOString().slice(0,10);
+  document.getElementById('suggestBox').classList.remove('show');
+  save();
+};
+document.getElementById('exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify(S, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rainbow-pitch-' + today() + '.json';
+  a.click();
+};
+document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
+document.getElementById('importFile').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (typeof imported !== 'object' || !('enabled' in imported) || !('daily' in imported)) {
+        alert('文件格式不对,这似乎不是本工具导出的备份文件。');
+        return;
+      }
+      const hasData = S.daily && Object.keys(S.daily).length > 0;
+      let proceed = true;
+      if (hasData) {
+        proceed = confirm('当前这台电脑已经有训练数据。\n\n点"确定"= 用备份文件【覆盖】当前数据(当前数据会丢失,建议先导出)。\n点"取消"= 不导入,保留当前数据。');
+      }
+      if (!proceed) { e.target.value = ''; return; }
+      S = Object.assign(structuredClone(DEFAULT_STATE), imported);
+      if (!S.params) S.params = structuredClone(DEFAULT_STATE.params);
+      save();
+      document.getElementById('pMinDays').value = S.params.minDays;
+      document.getElementById('pMinPresses').value = S.params.minPresses;
+      document.getElementById('pBreadth').value = S.params.breadth;
+      toggleSoundMode(); renderVoiceBtn(); renderSongSelect(); renderTimbreSelects();
+      renderNotes(); renderStats(); checkAdvance();
+      alert('导入成功,数据已接续。');
+    } catch (err) {
+      alert('读取失败,文件可能已损坏。');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+};
+document.getElementById('resetBtn').onclick = () => {
+  if (confirm('确定清空全部训练数据(含导入的歌曲)?此操作不可恢复。建议先导出备份。')) {
+    localStorage.removeItem('rainbowPitch');
+    S = loadState(); save();
+    toggleSoundMode(); renderVoiceBtn(); renderSongSelect(); renderTimbreSelects(); renderNotes(); renderStats();
+  }
+};
+
+// 初始化
+document.getElementById('pMinDays').value = S.params.minDays;
+document.getElementById('pMinPresses').value = S.params.minPresses;
+document.getElementById('pBreadth').value = S.params.breadth;
+toggleSoundMode();
+renderVoiceBtn();
+renderSongSelect();
+// 三模式音色下拉框
+function renderTimbreSelects() {
+  if (!S.timbre) S.timbre = { train: 'rotate10', free: 'rotate10', follow: '0' };
+  const fixedOpts = TIMBRES.map((t, i) => '<option value="' + i + '">固定 · ' + t.name + '</option>').join('');
+  const rotOpts = '<option value="rotate10">每10次拍击轮换</option><option value="session">每次启动轮换</option>';
+  document.getElementById('timTrain').innerHTML = rotOpts + fixedOpts;
+  document.getElementById('timFree').innerHTML = rotOpts + fixedOpts;
+  document.getElementById('timFollow').innerHTML = fixedOpts;
+  document.getElementById('timTrain').value = S.timbre.train;
+  document.getElementById('timFree').value = S.timbre.free;
+  document.getElementById('timFollow').value = S.timbre.follow;
+}
+[['timTrain','train'],['timFree','free'],['timFollow','follow']].forEach(([id, mode]) => {
+  document.getElementById(id).onchange = e => { S.timbre[mode] = e.target.value; save(); };
+});
+
+renderTimbreSelects();
+renderNotes();
+renderStats();
+renderVoiceRow();
+</script>
+</body>
+</html>
